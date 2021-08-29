@@ -1,12 +1,19 @@
 {
   "name": "schemy-reference-support",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "Add reference support to Schemy",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "schema",
+    "schemy",
+    "validation",
+    "json",
+    "node",
+    "js"
+  ],
+  "author": "Alan Berdinelli",
+  "license": "MIT"
 }

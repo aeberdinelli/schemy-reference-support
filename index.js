@@ -2,7 +2,7 @@ const Plugin = {
 	pluginName: 'schemy-reference-support',
 
 	// Required Schemy version
-	requiredVersion: '3.2.0',
+	requiredVersion: '3.2.1',
 
 	// Things where you can reference other schema properties
 	availableRefs: ['min', 'max', 'regex'],
@@ -92,6 +92,11 @@ const Plugin = {
 						throw `Could not parse property ${key} as schema`;
 					}
 				}
+
+				else if (typeof properties === 'string' && Plugin.isReference(properties)) {
+					// This property links directly to another property from the schema
+					// Ignore other validations at parsing time
+				}
 			}
 
 			else if (typeof properties.type === 'function') {
@@ -116,7 +121,7 @@ const Plugin = {
 				}
 			}
 
-			else if (typeof properties.type === 'string' && ['uuid/v1','uuid/v4'].indexOf(properties.type) === -1) {
+			else if (typeof properties.type === 'string' && ['uuid/v1','uuid/v4'].indexOf(properties.type) === -1 && !Plugin.isReference(properties.type)) {
 				throw `Unsupported type on ${key}: ${properties.type}`;
 			}
 
@@ -158,9 +163,14 @@ const Plugin = {
 
 	/**
 	 * Fill the referenced values before validating
+	 * Also: performs a validation for directly linked properties:
 	 */
 	beforeValidate(data) {
 		Plugin.versionCheck();
+
+		if (!this.validationErrors) {
+			this.validationErrors = [];
+		}
 
 		if (!data || typeof data !== 'object') {
 			this.validationErrors.push('Data passed to validate is incorrect. It must be an object.');
@@ -168,6 +178,22 @@ const Plugin = {
 		}
 
 		for (var [key, properties] of Object.entries(this.schema)) {
+			if (typeof properties === 'string' || typeof properties.type === 'string') {
+				const reference = (typeof properties.type === 'string') ? properties.type : properties;
+
+				if (Plugin.isReference(reference)) {
+					const referencedPropertyName = Plugin.parseReferenceName(reference);
+					const referencedValue = Plugin.Schemy.$ref(reference, data);
+
+					// Check if property is directly linked to another one and test for a match
+					if (data[key] !== referencedValue) {
+						this.validationErrors.push(`Property ${key} does not match referenced value: ${referencedPropertyName}`);
+					}
+					
+					continue;
+				}
+			}
+
 			Plugin.availableRefs.forEach(ref => {
 				if (properties[ref]) {
 					properties[ref] = Plugin.Schemy.$ref(properties[ref], data);
