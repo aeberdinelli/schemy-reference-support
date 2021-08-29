@@ -1,6 +1,6 @@
 # Reference support
 ## Introduction 
-This plugin adds the functionality to reference values from within a schema using `Schemy.$ref()`.
+This [Schemy](https://github.com/aeberdinelli/schemy) plugin adds the functionality to reference values from within a schema using `Schemy.$ref()`.
 
 ## Install
 - `npm install --save schemy-reference-support`
