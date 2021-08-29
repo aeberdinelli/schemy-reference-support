@@ -19,7 +19,9 @@ Schemy.extend(SchemyReferenceSupport);
 ```
 
 ## Examples
-#### In property settings
+### In property settings
+We can use a previously defined property within the definition of the schema. In the following example we set the max elements for an array using the `maxItems` property.
+
 ```javascript
 const schema = new Schemy({
     maxItems: {
@@ -40,9 +42,7 @@ schema.validate({
 schema.getValidationErrors(); // => [ 'Property items must contain no more than 1 elements' ]
 ```
 
-In the example above, we define a property `maxItem` as a required number. Then, we set the max items for `items` to be that property. This way, since we pass `1` to `maxItems`, the schema will fail when passing more than 1 item to the array.
-
-#### Direct reference
+### Direct reference
 We can also reference directly to a property if we want two properties to match. This is useful for password confirmation:
 
 ```javascript
