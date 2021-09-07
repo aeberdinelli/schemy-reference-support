@@ -35,7 +35,7 @@ const schema = new Schemy({
 });
 
 schema.validate({
-	maxItems: 1,
+    maxItems: 1,
     items: ['one','two']
 }); // => false
 
